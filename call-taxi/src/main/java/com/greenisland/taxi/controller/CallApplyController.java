@@ -53,5 +53,6 @@ public class CallApplyController {
 		location.setGpsTime(new Date());
 		location.setUserId(userInfo.getId());
 		locationInfoService.saveLocationInfo(location);
+		String test = "";
 	}
 }
