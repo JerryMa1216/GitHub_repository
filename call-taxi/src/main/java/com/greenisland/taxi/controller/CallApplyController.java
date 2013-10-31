@@ -3,6 +3,7 @@ package com.greenisland.taxi.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -14,9 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.greenisland.taxi.common.constant.ApplicationState;
+import com.greenisland.taxi.common.constant.CallType;
+import com.greenisland.taxi.common.constant.ResponseState;
+import com.greenisland.taxi.common.constant.TradeState;
+import com.greenisland.taxi.common.utils.TCPUtils;
+import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.LocationInfo;
 import com.greenisland.taxi.domain.UserInfo;
 import com.greenisland.taxi.gateway.gps.SyncClient;
+import com.greenisland.taxi.gateway.gps.resolver.MessageHandler;
+import com.greenisland.taxi.manager.CallApplyInfoService;
 import com.greenisland.taxi.manager.LocationInfoService;
 import com.greenisland.taxi.manager.UserInfoService;
 
@@ -36,13 +45,35 @@ public class CallApplyController {
 	private UserInfoService userInfoService;
 	@Resource
 	private LocationInfoService locationInfoService;
+	@Resource
+	private CallApplyInfoService callApplyInfoService;
+	@Resource
+	private MessageHandler messageHandler;
+	private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	/**
+	 * 叫车请求
+	 * 
+	 * @param phoneNumber
+	 * @param callTime
+	 * @param callType
+	 * @param callScope
+	 * @param callDistance
+	 * @param mechineType
+	 * @param sLoca
+	 * @param eLoca
+	 * @param longitude
+	 * @param latitude
+	 * @throws Exception 
+	 */
 	@RequestMapping(value = "/call_taxi", method = RequestMethod.POST)
-	public void callTaxi(@RequestParam String phoneNumber, @RequestParam String callTime, @RequestParam String callType, @RequestParam String callScope, @RequestParam String callDistance,
-			@RequestParam String mechineType, @RequestParam String sLoca, @RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude) {
+	public void callTaxi(@RequestParam String phoneNumber, @RequestParam String callTime, @RequestParam String callType,
+			@RequestParam String callScope, @RequestParam String callDistance, @RequestParam String mechineType, @RequestParam String sLoca,
+			@RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude) throws Exception {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
+		Map<String, Object> mapCall = null;// 调用接口返回值
 		// 读到用户信息
 		UserInfo userInfo = userInfoService.getUserInfoByPhoneNumber(phoneNumber);
 		// 保存用户叫车位置
@@ -53,5 +84,31 @@ public class CallApplyController {
 		location.setGpsTime(new Date());
 		location.setUserId(userInfo.getId());
 		locationInfoService.saveLocationInfo(location);
+		CallApplyInfo applyInfo = new CallApplyInfo();
+		applyInfo.setUserId(userInfo.getId());
+		applyInfo.setCallLength(Integer.parseInt(callDistance));
+		applyInfo.setCallScope(Integer.parseInt(callScope));
+		applyInfo.setCallTime(format.parse(callTime));
+		applyInfo.setCallType(callType);
+		applyInfo.setEndLocation(eLoca);
+		applyInfo.setStartLocation(sLoca);
+		applyInfo.setMechineType(mechineType);
+		applyInfo.setCreateDate(new Date());
+		applyInfo.setState(ApplicationState.VALIDATION);
+		applyInfo.setIsGetOn("0");
+		applyInfo.setResponseState(ResponseState.WAIT_RESPONSE);
+		applyInfo.setTradeState(TradeState.WAIT_FINISH);
+		applyInfo.setMonitorCount(0);
+		applyInfo.setIsComment("0");
+		applyInfo.setDeleteFlag("N");// 未删除
+		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
+		//即时叫车
+		if(callType.equals(CallType.PROMP_CALL)){
+			String requestMsg = TCPUtils.getCallApply(applyInfo, applyId, location, userInfo);
+			syncClient.sendMessage(requestMsg);
+			String responseData = syncClient.getResult();
+			mapCall = messageHandler.handler(responseData);
+		}
+		
 	}
 }

@@ -86,6 +86,12 @@ public class DefaultMessageHandler implements MessageHandler {
 				taxi.setCompanyInfo(company);
 				map.put(Integer.toString(GPSCommand.GPS_TAXI_MONITER), taxi);
 				break;
+			case GPSCommand.GPS_CALL_RESP:
+				if(content[1].equals("OK")){
+					map.put(Integer.toString(GPSCommand.GPS_CALL_RESP), content[0]);
+				}else{
+					map.put(Integer.toString(GPSCommand.GPS_CALL_RESP), "ER");
+				}
 			}
 		}
 		return map;

@@ -4,6 +4,10 @@ import java.util.Random;
 
 import org.springframework.util.StringUtils;
 
+import com.greenisland.taxi.domain.CallApplyInfo;
+import com.greenisland.taxi.domain.LocationInfo;
+import com.greenisland.taxi.domain.UserInfo;
+
 /**
  * 
  * @author Jerry
@@ -67,20 +71,24 @@ public class TCPUtils {
 		return monitorMessage.toString();
 	}
 
-	/*
-	 * public static String getCallApply(CallApplyInfo applyInfo, String
-	 * applyId, LocationInfo location, UserInfo user) { StringBuilder
-	 * callApplyMsg = new StringBuilder("<<0003,");
-	 * callApplyMsg.append(generateProcessId()); callApplyMsg.append("," +
-	 * applyId + "," + applyInfo.getCallType() + "," +
-	 * applyInfo.getStartLocation() + "," + applyInfo.getEndLocation());
-	 * callApplyMsg.append("," + location.getGpsLongitude() + "," +
-	 * location.getGpsLatitude() + "," + applyInfo.getCallTime());
-	 * callApplyMsg.append("," + applyInfo.getCallScope() + "," +
-	 * user.getUserName() + "," + user.getPhoneNumber());
-	 * callApplyMsg.append("," + user.getAddress() + ">>"); return
-	 * callApplyMsg.toString(); }
+	/**
+	 * 获取即时叫车请求信息
+	 * 
+	 * @param applyInfo
+	 * @param applyId
+	 * @param location
+	 * @param user
+	 * @return
 	 */
+	public static String getCallApply(CallApplyInfo applyInfo, String applyId, LocationInfo location, UserInfo user) {
+		StringBuilder callApplyMsg = new StringBuilder("<<0003,");
+		callApplyMsg.append(generateProcessId());
+		callApplyMsg.append("," + applyId + "," + applyInfo.getCallType() + "," + applyInfo.getStartLocation() + "," + applyInfo.getEndLocation());
+		callApplyMsg.append("," + location.getGpsLongitude() + "," + location.getGpsLatitude() + "," + applyInfo.getCallTime());
+		callApplyMsg.append("," + applyInfo.getCallScope() + "," + user.getUserName() + "," + user.getPhoneNumber());
+		callApplyMsg.append("," + user.getAddress() + ">>");
+		return callApplyMsg.toString();
+	}
 
 	/**
 	 * 产生流水号
