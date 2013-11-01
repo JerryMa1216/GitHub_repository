@@ -32,7 +32,7 @@ public class DefaultMessageHandler implements MessageHandler {
 			// 消息id
 			String msgId = msg2.substring(0, 4);
 			// 流水id
-			String processId = msg2.substring(5, 15);
+//			String processId = msg2.substring(5, 15);
 			// 消息体
 			String body = msg2.substring(16);
 			String[] content = body.split(",");
@@ -59,7 +59,7 @@ public class DefaultMessageHandler implements MessageHandler {
 						taxi.setSpeed(taxis[4]);
 						taxi.setIsEmpty(taxis[5]);
 						taxi.setDriverName(taxis[7]);
-						taxi.setDirverPhoneName(taxis[8]);
+						taxi.setDirverPhoneNumber(taxis[8]);
 						company.setName(taxis[9]);
 						taxi.setCompanyInfo(company);
 						list.add(taxi);
@@ -81,7 +81,7 @@ public class DefaultMessageHandler implements MessageHandler {
 				taxi.setSpeed(taxis[4]);
 				taxi.setIsEmpty(taxis[5]);
 				taxi.setDriverName(taxis[7]);
-				taxi.setDirverPhoneName(taxis[8]);
+				taxi.setDirverPhoneNumber(taxis[8]);
 				company.setName(taxis[9]);
 				taxi.setCompanyInfo(company);
 				map.put(Integer.toString(GPSCommand.GPS_TAXI_MONITER), taxi);

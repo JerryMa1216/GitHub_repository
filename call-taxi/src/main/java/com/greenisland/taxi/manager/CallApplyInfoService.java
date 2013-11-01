@@ -22,4 +22,8 @@ public class CallApplyInfoService extends BaseHibernateDao {
 	public String saveCallApplyInfo(CallApplyInfo applyInfo) {
 		return (String) this.getHibernateTemplate().save(applyInfo);
 	}
+
+	public void updateApplyInfo(CallApplyInfo applyInfo) {
+		this.getHibernateTemplate().update(applyInfo);
+	}
 }

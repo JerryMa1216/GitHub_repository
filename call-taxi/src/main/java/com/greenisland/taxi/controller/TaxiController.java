@@ -2,6 +2,7 @@ package com.greenisland.taxi.controller;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,30 +71,34 @@ public class TaxiController {
 			String returnData = syncClient.getResult();
 			mapTaxi = messageHandler.handler(returnData);
 			List<TaxiInfo> taxis = (List<TaxiInfo>) mapTaxi.get(Integer.toString(GPSCommand.GPS_AROUND_TAXIS));
+			List<TaxiInfo> reTaxis = new ArrayList<TaxiInfo>();
 			TaxiInfo tempTaxi = new TaxiInfo();
 			if (taxis != null) {
 				for (TaxiInfo taxi : taxis) {
-					if (taxiInfoService.validateTaxiExist(taxi.getTaxiPlateNumber())) {
-						tempTaxi = taxiInfoService.getTaxiByPlateNumber(taxi.getTaxiPlateNumber());
-						taxi.setId(tempTaxi.getId());
-						taxi.setCallApplyInfos(tempTaxi.getCallApplyInfos());
-						taxi.setBreakPromiseCount(tempTaxi.getBreakPromiseCount());
-					} else {
-						taxi.setCallApplyInfos(null);
-						taxi.setBreakPromiseCount(0);
+					if (taxi.getIsEmpty().equals("0")) {
+						if (taxiInfoService.validateTaxiExist(taxi.getTaxiPlateNumber())) {
+							tempTaxi = taxiInfoService.getTaxiByPlateNumber(taxi.getTaxiPlateNumber());
+							taxi.setId(tempTaxi.getId());
+							taxi.setCallApplyInfos(tempTaxi.getCallApplyInfos());
+							taxi.setBreakPromiseCount(tempTaxi.getBreakPromiseCount());
+						} else {
+							taxi.setCallApplyInfos(null);
+							taxi.setBreakPromiseCount(0);
+						}
+						reTaxis.add(taxi);
 					}
 				}
 				map.put("state", "0");
 				map.put("message", "OK");
-				map.put("count", taxis.size());
+				map.put("count", reTaxis.size());
 				map.put("date", new Date());
-				map.put("datas", taxis);
+				map.put("data", reTaxis);
 			} else {
 				map.put("state", "0");
 				map.put("message", "OK");
 				map.put("count", 0);
 				map.put("date", new Date());
-				map.put("datas", null);
+				map.put("data", null);
 			}
 		} catch (Exception e) {
 			log.error("系统异常>>" + e.getMessage());
@@ -101,7 +106,7 @@ public class TaxiController {
 			map.put("message", "ER");
 			map.put("count", 0);
 			map.put("date", new Date());
-			map.put("datas", null);
+			map.put("data", null);
 		}
 		try {
 			response.reset();

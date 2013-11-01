@@ -32,7 +32,7 @@ public class TaxiInfo {
 	private String id;
 	private String taxiPlateNumber;
 	private String driverName;
-	private String dirverPhoneName;// 司机手机号
+	private String dirverPhoneNumber;// 司机手机号
 	private Integer breakPromiseCount;// 爽约次数
 	private String companyId;// 集团公司id
 	private String isEmpty;// 载客状态
@@ -46,12 +46,12 @@ public class TaxiInfo {
 	private CompanyInfo companyInfo;
 	private Set<CallApplyInfo> callApplyInfos;// 订单信息
 
-	public TaxiInfo(String id, String taxiPlateNumber, String driverName, String dirverPhoneName, Integer breakPromiseCount, String companyId, String isEmpty, String speed) {
+	public TaxiInfo(String id, String taxiPlateNumber, String driverName, String dirverPhoneNumber, Integer breakPromiseCount, String companyId, String isEmpty, String speed) {
 		super();
 		this.id = id;
 		this.taxiPlateNumber = taxiPlateNumber;
 		this.driverName = driverName;
-		this.dirverPhoneName = dirverPhoneName;
+		this.dirverPhoneNumber = dirverPhoneNumber;
 		this.breakPromiseCount = breakPromiseCount;
 		this.companyId = companyId;
 		this.isEmpty = isEmpty;
@@ -92,12 +92,12 @@ public class TaxiInfo {
 	}
 
 	@Column(name = "DRIVER_PHONE_NUMBER_")
-	public String getDirverPhoneName() {
-		return dirverPhoneName;
+	public String getDirverPhoneNumber() {
+		return dirverPhoneNumber;
 	}
 
-	public void setDirverPhoneName(String dirverPhoneName) {
-		this.dirverPhoneName = dirverPhoneName;
+	public void setDirverPhoneNumber(String dirverPhoneNumber) {
+		this.dirverPhoneNumber = dirverPhoneNumber;
 	}
 
 	@Column(name = "BREAK_PROMISS_COUNT_")

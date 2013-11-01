@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.greenisland.taxi.common.BaseHibernateDao;
-import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.TaxiInfo;
 
 /**

@@ -1,11 +1,13 @@
 package com.greenisland.taxi.controller;
 
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.greenisland.taxi.common.constant.ApplicationState;
-import com.greenisland.taxi.common.constant.CallType;
+import com.greenisland.taxi.common.constant.GPSCommand;
 import com.greenisland.taxi.common.constant.ResponseState;
 import com.greenisland.taxi.common.constant.TradeState;
 import com.greenisland.taxi.common.utils.TCPUtils;
@@ -64,12 +66,12 @@ public class CallApplyController {
 	 * @param eLoca
 	 * @param longitude
 	 * @param latitude
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@RequestMapping(value = "/call_taxi", method = RequestMethod.POST)
 	public void callTaxi(@RequestParam String phoneNumber, @RequestParam String callTime, @RequestParam String callType,
 			@RequestParam String callScope, @RequestParam String callDistance, @RequestParam String mechineType, @RequestParam String sLoca,
-			@RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude) throws Exception {
+			@RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude, HttpServletResponse response) throws Exception {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
@@ -101,14 +103,80 @@ public class CallApplyController {
 		applyInfo.setMonitorCount(0);
 		applyInfo.setIsComment("0");
 		applyInfo.setDeleteFlag("N");// 未删除
+		// 即时叫车
 		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
-		//即时叫车
-		if(callType.equals(CallType.PROMP_CALL)){
-			String requestMsg = TCPUtils.getCallApply(applyInfo, applyId, location, userInfo);
-			syncClient.sendMessage(requestMsg);
-			String responseData = syncClient.getResult();
-			mapCall = messageHandler.handler(responseData);
+		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId, location, userInfo);
+		syncClient.sendMessage(requestMsg);
+		String responseData = syncClient.getResult();
+		mapCall = messageHandler.handler(responseData);
+		String returnData = (String) mapCall.get(GPSCommand.GPS_CALL_RESP);
+		if (!returnData.equals("ER")) {
+			// 叫车请求发送成功
+			map.put("state", 0);
+			map.put("message", "OK");
+			map.put("date", new Date());
+			map.put("data", returnData);
+		} else {
+			CallApplyInfo apply = callApplyInfoService.getCallApplyInfoById(applyId);
+			apply.setDeleteFlag("Y");
+			apply.setState(ApplicationState.INVALIDATION);
+			callApplyInfoService.updateApplyInfo(apply);
+			map.put("state", 1);
+			map.put("message", "ER");
+			map.put("date", new Date());
+			map.put("data", null);
 		}
-		
+
+		try {
+			response.reset();
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/json");
+			PrintWriter pw = response.getWriter();
+			pw.write(objectMapper.writeValueAsString(map));
+			pw.flush();
+			pw.close();
+		} catch (Exception e) {
+			log.error("系统异常>>" + e.getMessage());
+		}
+
+	}
+
+	@RequestMapping(value = "/call_cancel", method = RequestMethod.POST)
+	public void cancelCall(@RequestParam String applyId, @RequestParam String canncelReason, @RequestParam String uid, HttpServletResponse response) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
+		CallApplyInfo applyInfo = callApplyInfoService.getCallApplyInfoById(applyId);
+		if (applyInfo != null) {
+			applyInfo.setCanncelReason(canncelReason);
+			applyInfo.setDeleteFlag("Y");
+			applyInfo.setState(ApplicationState.INVALIDATION);
+			UserInfo userInfo = userInfoService.getUserInfoById(uid);
+			userInfo.setBreakPromissDate(new Date());
+			int count = userInfo.getBreakPromiseCount();
+			userInfo.setBreakPromiseCount(count++);
+			userInfo.setUpdateDate(new Date());
+			this.userInfoService.saveUserInfo(userInfo);
+			map.put("state", 0);
+			map.put("message", "OK");
+			map.put("date", new Date());
+			map.put("data", null);
+		} else {
+			map.put("state", 1);
+			map.put("message", "ER");
+			map.put("date", new Date());
+			map.put("data", null);
+		}
+		try {
+			response.reset();
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/json");
+			PrintWriter pw = response.getWriter();
+			pw.write(objectMapper.writeValueAsString(map));
+			pw.flush();
+			pw.close();
+		} catch (Exception e) {
+			log.error("系统异常>>" + e.getMessage());
+		}
 	}
 }

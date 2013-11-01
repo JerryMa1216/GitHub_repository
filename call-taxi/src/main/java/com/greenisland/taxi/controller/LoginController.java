@@ -53,7 +53,8 @@ public class LoginController {
 	private static Log log = LogFactory.getLog(AuthenticateFilter.class);
 
 	@RequestMapping(value = "/get_captcha", method = RequestMethod.GET)
-	public String getCaptcha(@RequestParam String phoneNumber, @RequestParam String equipmentId, HttpServletRequest request, HttpServletResponse response) {
+	public String getCaptcha(@RequestParam String phoneNumber, @RequestParam String equipmentId, HttpServletRequest request,
+			HttpServletResponse response) {
 		boolean flag = false;
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
