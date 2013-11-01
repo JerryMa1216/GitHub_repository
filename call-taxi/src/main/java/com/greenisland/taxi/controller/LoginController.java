@@ -81,20 +81,20 @@ public class LoginController {
 								this.userInfoService.updateUserInfo(userInfo);
 								equipmentInfo.setRequestCaptchaCount(equipmentInfo.getRequestCaptchaCount() + 1);
 								this.equipmentInfoService.update(equipmentInfo);
-								map.put("state", "1");
+								map.put("state", "0");
 								map.put("message", "成功");
 								map.put("date", new Date());
 								map.put("data", null);
 							}
 						} catch (Exception e) {
 							log.error("系统异常>>" + e.getMessage());
-							map.put("state", "01");
+							map.put("state", "1");
 							map.put("message", "异常失败");
 							map.put("date", new Date());
 							map.put("data", null);
 						}
 					} else {
-						map.put("state", "02");
+						map.put("state", "2");
 						map.put("message", "获取验证码次数过多！");
 						map.put("date", new Date());
 						map.put("data", null);
@@ -114,21 +114,21 @@ public class LoginController {
 							this.userInfoService.saveUserInfo(newUser);
 							equipmentInfo.setRequestCaptchaCount(equipmentInfo.getRequestCaptchaCount() + 1);
 							this.equipmentInfoService.update(equipmentInfo);
-							map.put("state", "1");
+							map.put("state", "0");
 							map.put("message", "成功");
 							map.put("date", new Date());
 							map.put("data", null);
 						}
 					} catch (Exception e) {
 						log.error("系统异常>>" + e.getMessage());
-						map.put("state", "01");
+						map.put("state", "1");
 						map.put("message", "异常失败");
 						map.put("date", new Date());
 						map.put("data", null);
 					}
 				}
 			} else {
-				map.put("state", "02");
+				map.put("state", "2");
 				map.put("message", "设备获取验证码次数过多！");
 				map.put("date", new Date());
 				map.put("data", null);
@@ -151,20 +151,20 @@ public class LoginController {
 							newEquipInfo.setEquipmentId(equipmentId);
 							newEquipInfo.setRequestCaptchaCount(1);
 							// this.equipmentInfoService.update(newEquipInfo);
-							map.put("state", "1");
+							map.put("state", "0");
 							map.put("message", "成功");
 							map.put("date", new Date());
 							map.put("data", null);
 						}
 					} catch (Exception e) {
 						log.error("系统异常>>" + e.getMessage());
-						map.put("state", "01");
+						map.put("state", "1");
 						map.put("message", "异常失败");
 						map.put("date", new Date());
 						map.put("data", null);
 					}
 				} else {
-					map.put("state", "01");
+					map.put("state", "2");
 					map.put("message", "获取验证码次数过多！");
 					map.put("date", new Date());
 					map.put("data", null);
@@ -185,14 +185,14 @@ public class LoginController {
 						newEquipInfo.setEquipmentId(equipmentId);
 						newEquipInfo.setRequestCaptchaCount(1);
 						this.equipmentInfoService.update(newEquipInfo);
-						map.put("state", "1");
+						map.put("state", "0");
 						map.put("message", "成功");
 						map.put("date", new Date());
 						map.put("data", null);
 					}
 				} catch (Exception e) {
 					log.error("系统异常>>" + e.getMessage());
-					map.put("state", "01");
+					map.put("state", "1");
 					map.put("message", "异常失败");
 					map.put("date", new Date());
 					map.put("data", null);
@@ -243,18 +243,18 @@ public class LoginController {
 					baseUser.setActivateState(UserState.NON_ACTIVATED);
 					this.userInfoService.updateUserInfo(baseUser);
 					String returnData = baseUser.getId() + "," + token;
-					map.put("state", "1");
+					map.put("state", "0");
 					map.put("message", "登陆成功！");
 					map.put("date", new Date());
 					map.put("data", new ReturnObject(DES.encryptDES(returnData, key)));
 				} else {
-					map.put("state", "01");
+					map.put("state", "1");
 					map.put("message", "登陆失败,验证码不正确！");
 					map.put("date", new Date());
 					map.put("data", new ReturnObject(null));
 				}
 			} else {
-				map.put("state", "02");
+				map.put("state", "2");
 				map.put("message", "您的账号已在其他设备上登陆！");
 				map.put("date", new Date());
 				map.put("data", new ReturnObject(null));
@@ -288,14 +288,14 @@ public class LoginController {
 		userInfo.setUpdateDate(new Date());
 		try {
 			this.userInfoService.updateUserInfo(userInfo);
-			map.put("state", "1");
+			map.put("state", "0");
 			map.put("message", "退出成功！");
 			map.put("date", new Date());
 			map.put("data", new ReturnObject(null));
 
 		} catch (Exception e) {
 			log.error("系统异常>>" + e.getMessage());
-			map.put("state", "0");
+			map.put("state", "1");
 			map.put("message", "退出失败！");
 			map.put("date", new Date());
 			map.put("data", new ReturnObject(null));

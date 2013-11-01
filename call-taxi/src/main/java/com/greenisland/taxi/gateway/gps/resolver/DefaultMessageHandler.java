@@ -23,7 +23,7 @@ import com.greenisland.taxi.domain.TaxiInfo;
 @Component
 public class DefaultMessageHandler implements MessageHandler {
 	private static Log log = LogFactory.getLog(DefaultMessageHandler.class);
-
+	
 	public Map<String, Object> handler(String message) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (StringUtils.hasText(message)) {
@@ -36,6 +36,7 @@ public class DefaultMessageHandler implements MessageHandler {
 			// 消息体
 			String body = msg2.substring(16);
 			String[] content = body.split(",");
+			String respBody = new String();
 			switch (Integer.parseInt(msgId)) {
 			case GPSCommand.GPS_LOGIN:
 				log.info("login success!");
@@ -50,7 +51,7 @@ public class DefaultMessageHandler implements MessageHandler {
 					for (int i = 2; i < content.length; i++) {
 						TaxiInfo taxi = new TaxiInfo();
 						CompanyInfo company = new CompanyInfo();
-						String respBody = content[i];
+						respBody = content[i];
 						String[] taxis = respBody.split("\\|");
 						taxi.setTaxiPlateNumber(taxis[0]);
 						taxi.setLongitude(taxis[1]);
@@ -72,7 +73,7 @@ public class DefaultMessageHandler implements MessageHandler {
 			case GPSCommand.GPS_TAXI_MONITER:
 				TaxiInfo taxi = new TaxiInfo();
 				CompanyInfo company = new CompanyInfo();
-				String respBody = content[1];
+				respBody = content[1];
 				String[] taxis = respBody.split("\\|");
 				taxi.setTaxiPlateNumber(taxis[0]);
 				taxi.setLongitude(taxis[1]);
@@ -92,6 +93,26 @@ public class DefaultMessageHandler implements MessageHandler {
 				}else{
 					map.put(Integer.toString(GPSCommand.GPS_CALL_RESP), "ER");
 				}
+				break;
+			case GPSCommand.GPS_TAXI_RESP:
+				String applyId = content[0];
+				TaxiInfo respTaxi = new TaxiInfo();
+				CompanyInfo respCompany = new CompanyInfo();
+				respBody = content[1];
+				String[] respTaxis = respBody.split("\\|");
+				respTaxi.setTaxiPlateNumber(respTaxis[0]);
+				respTaxi.setLongitude(respTaxis[1]);
+				respTaxi.setLatitude(respTaxis[2]);
+				respTaxi.setGpsTime(respTaxis[3]);
+				respTaxi.setSpeed(respTaxis[4]);
+				respTaxi.setIsEmpty(respTaxis[5]);
+				respTaxi.setDriverName(respTaxis[7]);
+				respTaxi.setDirverPhoneNumber(respTaxis[8]);
+				respCompany.setName(respTaxis[9]);
+				respTaxi.setCompanyInfo(respCompany);
+				map.put(Integer.toString(GPSCommand.GPS_TAXI_RESP), respTaxi);
+				map.put("applyId", applyId);
+				break;
 			}
 		}
 		return map;

@@ -103,7 +103,6 @@ public class CallApplyController {
 		applyInfo.setMonitorCount(0);
 		applyInfo.setIsComment("0");
 		applyInfo.setDeleteFlag("N");// 未删除
-		// 即时叫车
 		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
 		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId, location, userInfo);
 		syncClient.sendMessage(requestMsg);

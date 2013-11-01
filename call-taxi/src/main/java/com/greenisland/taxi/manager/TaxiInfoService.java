@@ -34,4 +34,12 @@ public class TaxiInfoService extends BaseHibernateDao {
 		List<TaxiInfo> list = this.getHibernateTemplate().find(hql, plateNumber);
 		return list != null && list.size() > 0 ? list.get(0) : null;
 	}
+
+	public void updateTaxiInfo(TaxiInfo taxiInfo) {
+		this.getHibernateTemplate().update(taxiInfo);
+	}
+
+	public String saveTaxiInfo(TaxiInfo taxiInfo) {
+		return (String) this.getHibernateTemplate().save(taxiInfo);
+	}
 }
