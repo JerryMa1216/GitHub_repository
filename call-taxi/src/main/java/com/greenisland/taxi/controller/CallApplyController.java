@@ -4,7 +4,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -18,21 +20,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.greenisland.taxi.common.constant.ApplicationState;
+import com.greenisland.taxi.common.constant.CommentState;
 import com.greenisland.taxi.common.constant.GPSCommand;
 import com.greenisland.taxi.common.constant.ResponseState;
 import com.greenisland.taxi.common.constant.TradeState;
 import com.greenisland.taxi.common.utils.TCPUtils;
 import com.greenisland.taxi.domain.CallApplyInfo;
+import com.greenisland.taxi.domain.CommentInfo;
 import com.greenisland.taxi.domain.LocationInfo;
 import com.greenisland.taxi.domain.UserInfo;
 import com.greenisland.taxi.gateway.gps.SyncClient;
 import com.greenisland.taxi.gateway.gps.resolver.MessageHandler;
 import com.greenisland.taxi.manager.CallApplyInfoService;
+import com.greenisland.taxi.manager.CommentInfoService;
 import com.greenisland.taxi.manager.LocationInfoService;
 import com.greenisland.taxi.manager.UserInfoService;
 
 /**
- * 叫车操作
+ * 订单操作
  * 
  * @author Jerry
  * @E-mail jerry.ma@bstek.com
@@ -51,6 +56,8 @@ public class CallApplyController {
 	private CallApplyInfoService callApplyInfoService;
 	@Resource
 	private MessageHandler messageHandler;
+	@Resource
+	private CommentInfoService commentInfoService;
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/**
@@ -140,6 +147,14 @@ public class CallApplyController {
 
 	}
 
+	/**
+	 * 手动取消即时叫车请求
+	 * 
+	 * @param applyId
+	 * @param canncelReason
+	 * @param uid
+	 * @param response
+	 */
 	@RequestMapping(value = "/call_cancel", method = RequestMethod.POST)
 	public void cancelCall(@RequestParam String applyId, @RequestParam String canncelReason, @RequestParam String uid, HttpServletResponse response) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -161,6 +176,76 @@ public class CallApplyController {
 			map.put("date", new Date());
 			map.put("data", null);
 		} else {
+			map.put("state", 1);
+			map.put("message", "ER");
+			map.put("date", new Date());
+			map.put("data", null);
+		}
+		try {
+			response.reset();
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/json");
+			PrintWriter pw = response.getWriter();
+			pw.write(objectMapper.writeValueAsString(map));
+			pw.flush();
+			pw.close();
+		} catch (Exception e) {
+			log.error("系统异常>>" + e.getMessage());
+		}
+	}
+
+	/**
+	 * 历史订单信息查询
+	 * 
+	 * @param uid
+	 * @param response
+	 */
+	@RequestMapping(value = "/query_orders", method = RequestMethod.POST)
+	public void queryHistoryOrder(@RequestParam String uid, HttpServletResponse response) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
+		List<CallApplyInfo> list = callApplyInfoService.queryApplyInfoByUid(uid);
+		map.put("state", 0);
+		map.put("message", "OK");
+		map.put("count", list.size());
+		map.put("date", new Date());
+		map.put("data", list);
+		try {
+			response.reset();
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/json");
+			PrintWriter pw = response.getWriter();
+			pw.write(objectMapper.writeValueAsString(map));
+			pw.flush();
+			pw.close();
+		} catch (Exception e) {
+			log.error("系统异常>>" + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/comment_driver", method = RequestMethod.POST)
+	public void commentCall(@RequestParam String applyId, @RequestParam String level, @RequestParam String content, @RequestParam String type,
+			HttpServletResponse response) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
+		CallApplyInfo applyInfo = callApplyInfoService.getCallApplyInfoById(applyId);
+		if (applyInfo != null) {
+			applyInfo.setIsGetOn(type);
+			applyInfo.setIsComment(CommentState.COMMENT);
+			CommentInfo commentInfo = new CommentInfo();
+			commentInfo.setApplyId(applyInfo.getId());
+			commentInfo.setContent(content);
+			commentInfo.setCreateDate(new Date());
+			commentInfo.setId(UUID.randomUUID().toString());
+			commentInfo.setLevel(Integer.parseInt(level));
+			commentInfoService.saveCommentInfo(commentInfo);
+			map.put("state", 0);
+			map.put("message", "OK");
+			map.put("date", new Date());
+			map.put("data", null);
+		}else{
 			map.put("state", 1);
 			map.put("message", "ER");
 			map.put("date", new Date());

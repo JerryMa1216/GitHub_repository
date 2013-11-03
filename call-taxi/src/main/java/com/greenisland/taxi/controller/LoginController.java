@@ -70,10 +70,8 @@ public class LoginController {
 					if (capCount < Integer.parseInt(Configure.getString("count"))) {
 						try {
 							message.append("159打车，登陆验证码为： " + captchaCode);
-							// flag =
-							// this.msgContainer.sendMsg(message.toString(),
-							// phoneNumber);
-							flag = true;
+							flag = this.msgContainer.sendMsg(message.toString(), phoneNumber);
+							flag = true;// 测试用
 							if (flag) {
 								userInfo.setCaptcha(captchaCode);
 								userInfo.setActivateState(UserState.ACTIVATED);
@@ -100,6 +98,7 @@ public class LoginController {
 						map.put("data", null);
 					}
 				} else {
+					// 新用户
 					try {
 						message.append("159打车，登陆验证码为： " + captchaCode);
 						flag = this.msgContainer.sendMsg(message.toString(), phoneNumber);
@@ -140,17 +139,17 @@ public class LoginController {
 				if (capCount < Integer.parseInt(Configure.getString("count"))) {
 					try {
 						message.append("159打车，登陆验证码为： " + captchaCode);
-						// flag = this.msgContainer.sendMsg(message.toString(),
-						// phoneNumber);
-						flag = true;
+						flag = this.msgContainer.sendMsg(message.toString(), phoneNumber);
+						flag = true;// 测试用
 						if (flag) {
 							userInfo.setCaptcha(captchaCode);
 							userInfo.setActivateState(UserState.ACTIVATED);
 							userInfo.setRequestCapCount(capCount + 1);
 							this.userInfoService.updateUserInfo(userInfo);
+							newEquipInfo.setId(UUID.randomUUID().toString());
 							newEquipInfo.setEquipmentId(equipmentId);
 							newEquipInfo.setRequestCaptchaCount(1);
-							// this.equipmentInfoService.update(newEquipInfo);
+							this.equipmentInfoService.save(newEquipInfo);
 							map.put("state", "0");
 							map.put("message", "成功");
 							map.put("date", new Date());
@@ -182,9 +181,10 @@ public class LoginController {
 						newUser.setUserName(phoneNumber);
 						newUser.setActivateState(UserState.ACTIVATED);
 						this.userInfoService.saveUserInfo(newUser);
+						newEquipInfo.setId(UUID.randomUUID().toString());
 						newEquipInfo.setEquipmentId(equipmentId);
 						newEquipInfo.setRequestCaptchaCount(1);
-						this.equipmentInfoService.update(newEquipInfo);
+						this.equipmentInfoService.save(newEquipInfo);
 						map.put("state", "0");
 						map.put("message", "成功");
 						map.put("date", new Date());

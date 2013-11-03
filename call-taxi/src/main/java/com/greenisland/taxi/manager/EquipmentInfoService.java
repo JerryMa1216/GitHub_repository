@@ -24,4 +24,8 @@ public class EquipmentInfoService extends BaseHibernateDao {
 	public void update(EquipmentInfo equipmentInfo) {
 		this.getHibernateTemplate().update(equipmentInfo);
 	}
+
+	public String save(EquipmentInfo equipmentInfo) {
+		return (String) this.getHibernateTemplate().save(equipmentInfo);
+	}
 }

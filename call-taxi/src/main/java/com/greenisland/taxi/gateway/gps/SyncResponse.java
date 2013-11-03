@@ -2,12 +2,14 @@ package com.greenisland.taxi.gateway.gps;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
 import com.greenisland.taxi.common.constant.GPSCommand;
+import com.greenisland.taxi.common.constant.ResponseState;
 import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.CompanyInfo;
 import com.greenisland.taxi.domain.TaxiInfo;
@@ -32,27 +34,40 @@ public class SyncResponse {
 		mapTaxi = messageHandler.handler(responseData);
 		String applyId = (String) mapTaxi.get("applyId");
 		TaxiInfo respTaxi = (TaxiInfo) mapTaxi.get(GPSCommand.GPS_TAXI_RESP);
-		CallApplyInfo applyInfo = callApplyInfoService.getCallApplyInfoById(applyId);
+		CallApplyInfo applyInfo = callApplyInfoService.getApplyInfoValidated(applyId);
+		CompanyInfo respCompany = respTaxi.getCompanyInfo();
 		if (applyInfo != null) {
-			CompanyInfo company = companyInfoService.getCompanyByName(respTaxi.getCompanyInfo() != null ? respTaxi.getCompanyInfo().getName() : null);
+			CompanyInfo company = companyInfoService.getCompanyByName(respCompany != null ? respCompany.getName() : null);
+			String taxiId = null;
+			String companyId = null;
+			TaxiInfo taxi = new TaxiInfo();
 			// 判断公司是否存在
 			if (company != null) {
-				TaxiInfo taxi = taxiInfoService.getTaxiByPlateNumber(respTaxi.getTaxiPlateNumber());
-				if (taxi != null) {
-					taxi.setUpdateDate(new Date());
-					taxiInfoService.updateTaxiInfo(taxi);
-				}else{
+				taxi = taxiInfoService.getTaxiByPlateNumber(respTaxi.getTaxiPlateNumber());
+				if (taxi == null) {
 					respTaxi.setCompanyId(company.getId());
 					respTaxi.setBreakPromiseCount(0);
 					respTaxi.setCreateDate(new Date());
-					String taxiId = taxiInfoService.saveTaxiInfo(respTaxi);
+					taxiId = taxiInfoService.saveTaxiInfo(respTaxi);
+				}
+			} else {
+				respCompany.setId(UUID.randomUUID().toString());
+				respCompany.setCreateDate(new Date());
+				companyId = companyInfoService.saveCompany(respCompany);
+				taxi = taxiInfoService.getTaxiByPlateNumber(respTaxi.getTaxiPlateNumber());
+				if (taxi == null) {
+					respTaxi.setCompanyId(companyId);
+					respTaxi.setBreakPromiseCount(0);
+					respTaxi.setCreateDate(new Date());
+					taxiId = taxiInfoService.saveTaxiInfo(respTaxi);
 				}
 			}
-			company.setCreateDate(new Date());
-			String companyId = companyInfoService.saveCompany(company);
-			respTaxi.setCompanyId(companyId);
-			// taxi.set
-			// applyInfo.setTaxiId(taxi)
+			// 更新订单信息
+			applyInfo.setTaxiId(taxiId);
+			applyInfo.setResponseState(ResponseState.RESPONSED);
+			applyInfo.setUpdateDate(new Date());
+			callApplyInfoService.updateApplyInfo(applyInfo);
+			// 调用推送
 		}
 	}
 }

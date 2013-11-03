@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import com.bstek.dorado.core.Configure;
+import com.greenisland.taxi.common.constant.GPSCommand;
 import com.greenisland.taxi.common.utils.TCPUtils;
 
 /**
@@ -25,6 +26,8 @@ import com.greenisland.taxi.common.utils.TCPUtils;
 public class TCPClient extends Thread implements InitializingBean {
 	@Resource
 	private SyncClient client;
+	@Resource
+	private SyncResponse synResponse;
 	private Socket socket = null;
 	public boolean isRunning = false;
 	private static OutputStream out = null;
@@ -77,6 +80,13 @@ public class TCPClient extends Thread implements InitializingBean {
 				rLen = in.read(data);
 				if (rLen > 0) {
 					resultValue = new String(data, 0, rLen, "GBK");
+					String msg1 = resultValue.substring(2);
+					String msg2 = msg1.substring(0, msg1.indexOf(">"));
+					// 消息id
+					String msgId = msg2.substring(0, 4);
+					if (msgId.equals(Integer.toString(GPSCommand.GPS_TAXI_RESP))) {
+						synResponse.handlerResponse(resultValue);
+					}
 					synchronized (client) {
 						client.setResult(resultValue);
 					}

@@ -28,16 +28,33 @@ public class UserInfoService extends BaseHibernateDao {
 		return list.size() > 0 && list != null ? list.get(0) : null;
 	}
 
+	/**
+	 * 根据手机号读取用户信息
+	 * 
+	 * @param phoneNumber
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public UserInfo getUserInfoByPhoneNumber(String phoneNumber) {
 		List<UserInfo> list = this.getHibernateTemplate().find("from UserInfo u where u.phoneNumber =?", phoneNumber);
 		return list.size() > 0 && list != null ? list.get(0) : null;
 	}
 
+	/**
+	 * 保存用户信息
+	 * 
+	 * @param userInfo
+	 * @return
+	 */
 	public String saveUserInfo(UserInfo userInfo) {
 		return (String) this.getHibernateTemplate().save(userInfo);
 	}
 
+	/**
+	 * 更新用户信息
+	 * 
+	 * @param userInfo
+	 */
 	public void updateUserInfo(UserInfo userInfo) {
 		this.getHibernateTemplate().update(userInfo);
 	}
