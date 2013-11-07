@@ -14,6 +14,7 @@ import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.CompanyInfo;
 import com.greenisland.taxi.domain.TaxiInfo;
 import com.greenisland.taxi.gateway.gps.resolver.MessageHandler;
+import com.greenisland.taxi.gateway.push.PushClient;
 import com.greenisland.taxi.manager.CallApplyInfoService;
 import com.greenisland.taxi.manager.CompanyInfoService;
 import com.greenisland.taxi.manager.TaxiInfoService;
@@ -28,6 +29,8 @@ public class SyncResponse {
 	private CompanyInfoService companyInfoService;
 	@Resource
 	private TaxiInfoService taxiInfoService;
+	@Resource
+	private PushClient pushClient;
 
 	public synchronized void handlerResponse(String responseData) {
 		Map<String, Object> mapTaxi = null;// 调用接口返回值
@@ -68,6 +71,7 @@ public class SyncResponse {
 			applyInfo.setUpdateDate(new Date());
 			callApplyInfoService.updateApplyInfo(applyInfo);
 			// 调用推送
+			
 		}
 	}
 }

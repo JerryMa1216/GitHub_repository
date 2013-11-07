@@ -138,9 +138,24 @@
 			<artifactId>spring-oxm</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.1.21</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
 	</dependencies>
 	<build>
-		<finalName>pss</finalName>
+		<finalName>taxi</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -194,6 +209,11 @@
 			<id>spring-milestone</id>
 			<name>Spring Maven MILESTONE Repository</name>
 			<url>http://maven.springframework.org/milestone</url>
+		</repository>
+		<repository>
+			<id>baidu_local</id>
+			<name>Baidu Local Repository</name>
+			<url>http://maven.scm.baidu.com:8081/nexus/content/repositories/Baidu_Local</url>
 		</repository>
 	</repositories>
 

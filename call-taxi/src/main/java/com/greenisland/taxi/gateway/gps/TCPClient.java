@@ -133,4 +133,7 @@ public class TCPClient extends Thread implements InitializingBean {
 		String returnData = client.getResult();
 		log.info("登陆成功,返回信息：[" + returnData + "]");
 	}
+	public static void main(String[] args) {
+		
+	}
 }

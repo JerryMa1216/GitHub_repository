@@ -224,6 +224,15 @@ public class CallApplyController {
 		}
 	}
 
+	/**
+	 * 评价司机
+	 * 
+	 * @param applyId
+	 * @param level
+	 * @param content
+	 * @param type
+	 * @param response
+	 */
 	@RequestMapping(value = "/comment_driver", method = RequestMethod.POST)
 	public void commentCall(@RequestParam String applyId, @RequestParam String level, @RequestParam String content, @RequestParam String type,
 			HttpServletResponse response) {
@@ -245,7 +254,7 @@ public class CallApplyController {
 			map.put("message", "OK");
 			map.put("date", new Date());
 			map.put("data", null);
-		}else{
+		} else {
 			map.put("state", 1);
 			map.put("message", "ER");
 			map.put("date", new Date());
