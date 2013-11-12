@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.greenisland.taxi.common.constant.GPSCommand;
+import com.greenisland.taxi.common.constant.MechineType;
 import com.greenisland.taxi.common.constant.ResponseState;
 import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.CompanyInfo;
@@ -36,8 +37,9 @@ public class SyncResponse {
 		Map<String, Object> mapTaxi = null;// 调用接口返回值
 		mapTaxi = messageHandler.handler(responseData);
 		String applyId = (String) mapTaxi.get("applyId");
+		String mechineType = applyId.split(",")[1];
 		TaxiInfo respTaxi = (TaxiInfo) mapTaxi.get(GPSCommand.GPS_TAXI_RESP);
-		CallApplyInfo applyInfo = callApplyInfoService.getApplyInfoValidated(applyId);
+		CallApplyInfo applyInfo = callApplyInfoService.getApplyInfoValidated(applyId.split(",")[0]);
 		CompanyInfo respCompany = respTaxi.getCompanyInfo();
 		if (applyInfo != null) {
 			CompanyInfo company = companyInfoService.getCompanyByName(respCompany != null ? respCompany.getName() : null);
@@ -71,6 +73,11 @@ public class SyncResponse {
 			applyInfo.setUpdateDate(new Date());
 			callApplyInfoService.updateApplyInfo(applyInfo);
 			// 调用推送
+			if(mechineType.equals(MechineType.ANDROID)){
+				pushClient.pushAndroidMessage();
+			}else{
+				pushClient.pushIOSNotify();
+			}
 			
 		}
 	}

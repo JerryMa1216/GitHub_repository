@@ -22,6 +22,7 @@ public class PushMessageRequest extends UserRelatedRequest {
 	private String messages;
 	private String messageKeys;
 	private Long messageExpires = DEFAULT_MSG_EXPIRES;
+	private Long deployStatus;
 	
 	public PushMessageRequest() {
 		super.setHttpMethod(HttpMethodName.POST);
@@ -87,4 +88,13 @@ public class PushMessageRequest extends UserRelatedRequest {
 	public void setMessageExpires(Long messageExpires) {
 		this.messageExpires = messageExpires;
 	}
+
+	public Long getDeployStatus() {
+		return deployStatus;
+	}
+
+	public void setDeployStatus(Long deployStatus) {
+		this.deployStatus = deployStatus;
+	}
+	
 }

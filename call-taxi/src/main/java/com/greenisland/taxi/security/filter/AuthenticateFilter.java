@@ -67,7 +67,7 @@ public class AuthenticateFilter implements Filter {
 				UserInfo user = this.userInfoService.getUserInfoById(uid);
 				String decryptSign = DES.decryptDES(sign, user.getKey());
 				String token = decryptSign.split(",")[0];
-				if (!user.getToken().equals(token)) {
+				if (!user.getToken().trim().equals(token)) {
 					log.error("来自：" + request.getRemoteAddr() + "用户访问资源" + url + "没有访问权限！");
 					map.put("returnCode", "0");
 					map.put("message", "无访问权限");

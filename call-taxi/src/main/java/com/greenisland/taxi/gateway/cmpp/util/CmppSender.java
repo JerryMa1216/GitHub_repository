@@ -120,7 +120,7 @@ public class CmppSender {
 			out.write(data);
 			out.flush();
 			return true;
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("在本连结上发送已打包后的消息的字节:无字节输入");
 		}

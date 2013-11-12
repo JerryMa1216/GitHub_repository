@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.annotations.GenericGenerator;
@@ -126,7 +127,7 @@ public class TaxiInfo {
 	public void setIsEmpty(String isEmpty) {
 		this.isEmpty = isEmpty;
 	}
-
+	@Transient
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COMPANY_ID_", insertable = false, updatable = false)
 	public CompanyInfo getCompanyInfo() {

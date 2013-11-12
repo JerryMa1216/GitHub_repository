@@ -32,6 +32,7 @@ public class CallApplyInfo implements Serializable {
 	private String startLocation;
 	private String endLocation;
 	private Date callTime;
+	
 	private String callType;
 	private String state;
 	private String responseState;
@@ -49,7 +50,10 @@ public class CallApplyInfo implements Serializable {
 	private Integer callLength;// 叫车距离
 	private Date createDate;
 	private Date updateDate;
-
+	// 虚拟属性
+	private String taxiPlateNumber;
+	private String driverName;
+	private String dirverPhoneNumber;
 	private UserInfo userInfo;
 	private TaxiInfo taxiInfo;
 	private CommentInfo commentInfo;
@@ -250,8 +254,9 @@ public class CallApplyInfo implements Serializable {
 		this.callLength = callLength;
 	}
 
-	public CallApplyInfo(String id, String startLocation, String endLocation, Date callTime, String callType, String state, String responseState, String tradeState, String isGetOn, String isComment,
-			String userId, String taxiId, String canncelReason, Date appointmentTime, Integer callScope, Integer monitorCount, String deleteFlag, String mechineType, Date createDate, Date updateDate) {
+	public CallApplyInfo(String id, String startLocation, String endLocation, Date callTime, String callType, String state, String responseState,
+			String tradeState, String isGetOn, String isComment, String userId, String taxiId, String canncelReason, Date appointmentTime,
+			Integer callScope, Integer monitorCount, String deleteFlag, String mechineType, Date createDate, Date updateDate) {
 		super();
 		this.id = id;
 		this.startLocation = startLocation;
@@ -278,7 +283,6 @@ public class CallApplyInfo implements Serializable {
 	public CallApplyInfo() {
 		super();
 	}
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID_", insertable = false, updatable = false)
 	public UserInfo getUserInfo() {
@@ -288,7 +292,6 @@ public class CallApplyInfo implements Serializable {
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
 	}
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TAXI_ID_", insertable = false, updatable = false)
 	public TaxiInfo getTaxiInfo() {
@@ -306,6 +309,30 @@ public class CallApplyInfo implements Serializable {
 
 	public void setCommentInfo(CommentInfo commentInfo) {
 		this.commentInfo = commentInfo;
+	}
+	@Transient
+	public String getTaxiPlateNumber() {
+		return taxiPlateNumber;
+	}
+
+	public void setTaxiPlateNumber(String taxiPlateNumber) {
+		this.taxiPlateNumber = taxiPlateNumber;
+	}
+	@Transient
+	public String getDriverName() {
+		return driverName;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+	@Transient
+	public String getDirverPhoneNumber() {
+		return dirverPhoneNumber;
+	}
+
+	public void setDirverPhoneNumber(String dirverPhoneNumber) {
+		this.dirverPhoneNumber = dirverPhoneNumber;
 	}
 
 }

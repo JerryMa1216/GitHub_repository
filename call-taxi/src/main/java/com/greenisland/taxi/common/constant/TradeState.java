@@ -15,9 +15,9 @@ public interface TradeState {
 	/**
 	 * 等待完成
 	 */
-	public static final String WAIT_FINISH = "1";
+	public static final String WAIT_FINISH = "2";
 	/**
 	 * 已完成
 	 */
-	public static final String FINISHED = "2";
+	public static final String FINISHED = "1";
 }

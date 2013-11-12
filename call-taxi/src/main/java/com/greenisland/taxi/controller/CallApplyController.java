@@ -2,6 +2,7 @@ package com.greenisland.taxi.controller;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +29,14 @@ import com.greenisland.taxi.common.utils.TCPUtils;
 import com.greenisland.taxi.domain.CallApplyInfo;
 import com.greenisland.taxi.domain.CommentInfo;
 import com.greenisland.taxi.domain.LocationInfo;
+import com.greenisland.taxi.domain.TaxiInfo;
 import com.greenisland.taxi.domain.UserInfo;
 import com.greenisland.taxi.gateway.gps.SyncClient;
 import com.greenisland.taxi.gateway.gps.resolver.MessageHandler;
 import com.greenisland.taxi.manager.CallApplyInfoService;
 import com.greenisland.taxi.manager.CommentInfoService;
 import com.greenisland.taxi.manager.LocationInfoService;
+import com.greenisland.taxi.manager.TaxiInfoService;
 import com.greenisland.taxi.manager.UserInfoService;
 
 /**
@@ -58,6 +61,8 @@ public class CallApplyController {
 	private MessageHandler messageHandler;
 	@Resource
 	private CommentInfoService commentInfoService;
+	@Resource
+	private TaxiInfoService taxiInfoService;
 	private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/**
@@ -111,7 +116,7 @@ public class CallApplyController {
 		applyInfo.setIsComment("0");
 		applyInfo.setDeleteFlag("N");// 未删除
 		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
-		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId, location, userInfo);
+		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId + "," + mechineType, location, userInfo);
 		syncClient.sendMessage(requestMsg);
 		String responseData = syncClient.getResult();
 		mapCall = messageHandler.handler(responseData);
@@ -201,16 +206,21 @@ public class CallApplyController {
 	 * @param response
 	 */
 	@RequestMapping(value = "/query_orders", method = RequestMethod.POST)
-	public void queryHistoryOrder(@RequestParam String uid, HttpServletResponse response) {
+	public void queryHistoryOrder(@RequestParam String uid, HttpServletResponse response) throws Exception{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
 		List<CallApplyInfo> list = callApplyInfoService.queryApplyInfoByUid(uid);
+		for(CallApplyInfo apply : list){
+			TaxiInfo taxi = taxiInfoService.getTaxiInfoById(apply.getTaxiId());
+			apply.setTaxiPlateNumber(taxi.getTaxiPlateNumber());
+			apply.setDriverName(taxi.getDriverName());
+			apply.setDirverPhoneNumber(taxi.getDirverPhoneNumber());
+		}
 		map.put("state", 0);
 		map.put("message", "OK");
-		map.put("count", list.size());
 		map.put("date", new Date());
-		map.put("data", list);
+		map.put("data", convertMap(list));
 		try {
 			response.reset();
 			response.setCharacterEncoding("UTF-8");
@@ -271,5 +281,26 @@ public class CallApplyController {
 		} catch (Exception e) {
 			log.error("系统异常>>" + e.getMessage());
 		}
+	}
+	
+	private List<Map<String,Object>> convertMap(List<CallApplyInfo> list){
+		List<Map<String,Object>> returnList = new ArrayList<Map<String,Object>>();
+		for(CallApplyInfo applyInfo : list){
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("id", applyInfo.getId());
+			map.put("startLocation", applyInfo.getStartLocation());
+			map.put("endLocation", applyInfo.getEndLocation());
+			map.put("callTime", applyInfo.getCallTime());
+			map.put("tradeState", applyInfo.getTradeState());
+			map.put("isComment", applyInfo.getIsComment());
+			map.put("taxiId", applyInfo.getTaxiId());
+			map.put("canncelReason", applyInfo.getCanncelReason());
+			map.put("monitorCount", applyInfo.getMonitorCount());
+			map.put("taxiPlateNumber", applyInfo.getTaxiPlateNumber());
+			map.put("driverName", applyInfo.getDriverName());
+			map.put("dirverPhoneNumber", applyInfo.getDirverPhoneNumber());
+			returnList.add(map);
+		}
+		return returnList;
 	}
 }

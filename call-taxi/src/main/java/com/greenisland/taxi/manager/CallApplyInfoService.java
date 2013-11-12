@@ -56,7 +56,8 @@ public class CallApplyInfoService extends BaseHibernateDao {
 	@SuppressWarnings("unchecked")
 	public List<CallApplyInfo> queryApplyInfoByUid(String uid) {
 		StringBuilder hql = new StringBuilder("from CallApplyInfo c where 1=1 ");
-		hql.append(" and c.deleteFlag ='N' and c.state='" + ApplicationState.VALIDATION + "' ");
+		hql.append(" and c.deleteFlag ='N' and c.state='" + ApplicationState.VALIDATION + "' and c.responseState='"+ResponseState.RESPONSED+"'");
+		
 		hql.append("and c.userId=?");
 		List<CallApplyInfo> list = this.getHibernateTemplate().find(hql.toString(), uid);
 		return list;

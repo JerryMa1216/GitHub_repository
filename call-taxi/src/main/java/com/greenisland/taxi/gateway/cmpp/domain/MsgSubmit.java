@@ -25,10 +25,10 @@ public class MsgSubmit extends MsgHead {
 	private String serviceId = "";// 业务类型
 	private byte feeUserType = 0x00;// 谁接收，计谁的费
 	private String feeTerminalId = "";// 被计费用户的号码
-	// private byte feeTerminalType = 0x00;
+	// private byte feeTerminalType = 0x00; 3.0版本支持
 	private byte tpPId = 0x00;// GSM协议类型
-	private byte tpUdhi = 0x00;
-	private byte msgFmt = 0x0f;
+	private byte tpUdhi = 0x00;//GSM协议类型。详细是解释请参考
+	private byte msgFmt = 0x0f;//信息格式
 	private String msgSrc;// 信息内容来源（SP的企业代码）
 	/**
 	 * 01：对“计费用户号码”免费 02：对“计费用户号码”按条计信息费 03：对“计费用户号码”按包月收取信息费 04：对“计费用户号码”的信息费封顶
@@ -43,7 +43,7 @@ public class MsgSubmit extends MsgHead {
 	private String srcId;// 源号码
 	private byte destUsrTl = 0x01;// 不支持群发
 	private String destTerminalId;// 接收手机号码，
-	// private byte destTerminalType = 0x00;// 真实号码
+	// private byte destTerminalType = 0x00;// 真实号码 3.0版本支持
 	private byte msgLength;
 	private byte[] msgContent;
 	// 点播业务使用的LinkID，非点播类业务的MT流程不使用该字段

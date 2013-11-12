@@ -11,7 +11,7 @@ public interface ResponseState {
 	/**
 	 * 已响应
 	 */
-	public static final String RESPONSED = "2";
+	public static final String RESPONSED = "1";
 	/**
 	 * 未响应
 	 */
@@ -19,5 +19,5 @@ public interface ResponseState {
 	/**
 	 * 等待响应
 	 */
-	public static final String WAIT_RESPONSE = "1";
+	public static final String WAIT_RESPONSE = "2";
 }

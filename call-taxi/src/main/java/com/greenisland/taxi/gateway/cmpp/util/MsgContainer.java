@@ -90,9 +90,9 @@ public class MsgContainer {
 		connect.setTotalLength(12 + 6 + 16 + 1 + 4);
 		connect.setCommandId(MsgCommand.CMPP_CONNECT);
 		connect.setSequenceId(MsgUtils.getSequence());
-		connect.setSourceAddr(Configure.getString("spId"));
+		connect.setSourceAddr(Configure.getString("user"));
 		String timestamp = MsgUtils.getTimestamp();
-		connect.setAuthenticatorSource(MsgUtils.getAuthenticatorSource(Configure.getString("spId"), Configure.getString("sharedSecret"), timestamp));
+		connect.setAuthenticatorSource(MsgUtils.getAuthenticatorSource(Configure.getString("user"), Configure.getString("pwd"), timestamp));
 		connect.setTimestamp(Integer.parseInt(timestamp));
 		connect.setVersion((byte) 0x20);
 		List<byte[]> dataList = new ArrayList<byte[]>();
@@ -169,17 +169,17 @@ public class MsgContainer {
 			submit.setTotalLength(159 + msgByte.length);
 			submit.setCommandId(MsgCommand.CMPP_SUBMIT);
 			submit.setSequenceId(seq);
-			submit.setPkTotal((byte) 0x01);
-			submit.setPkNumber((byte) 0x01);
-			submit.setRegisteredDelivery((byte) 0x00);
-			submit.setMsgLevel((byte) 0x01);
-			submit.setFeeUserType((byte) 0x02);
+			submit.setPkTotal((byte) 0x01);//相同Msg_Id的信息总条数，从1开始
+			submit.setPkNumber((byte) 0x01);//相同Msg_Id的信息序号，从1开始
+			submit.setRegisteredDelivery((byte) 0x01);//是否要求返回状态确认报告 0不需要 1需要
+			submit.setMsgLevel((byte) 0x01);//信息级别
+			submit.setFeeUserType((byte) 0x02);//计费用户类型字段
 			submit.setFeeTerminalId("");
-			submit.setTpPId((byte) 0x00);
-			submit.setTpUdhi((byte) 0x00);
-			submit.setMsgFmt((byte) 0x0f);
+			submit.setTpPId((byte) 0x00);//GSM协议类型
+			submit.setTpUdhi((byte) 0x00);//GSM协议类型
+			submit.setMsgFmt((byte) 0x0f);//信息格式
 			submit.setMsgSrc(Configure.getString("spId"));// 信息内容来源（SP的企业代码）
-			submit.setSrcId(Configure.getString("spCode"));// 源号码
+			submit.setSrcId(Configure.getString("serviceId"));// 源号码
 			submit.setDestTerminalId(cusMsisdn);// 接受短信的MSISDN号码
 			submit.setMsgLength((byte) msgByte.length);
 			submit.setMsgContent(msgByte);

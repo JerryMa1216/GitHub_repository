@@ -95,6 +95,8 @@ public class DefaultPushClient implements PushClient{
 		httpRequest.addParameter("messages", pushMsgReq.getMessages());
 		httpRequest.addParameter("push_type", pushType.ordinal());
 		httpRequest.addParameter("msg_keys", pushMsgReq.getMessageKeys());
+		//生产不用
+		httpRequest.addParameter("deploy_status", pushMsgReq.getDeployStatus());
 		
 		String tag = pushMsgReq.getTag();
 		if(PushType.tag_user.equals(pushType)){

@@ -32,7 +32,7 @@
 		</property>
 	</bean>
 
-	<!-- <bean id="msgActivityTimer" class="org.springframework.scheduling.quartz.JobDetailBean">
+	<bean id="msgActivityTimer" class="org.springframework.scheduling.quartz.JobDetailBean">
 		<property name="jobClass">
 			<value>com.greenisland.taxi.gateway.cmpp.util.MsgActivityTimer</value>
 		</property>
@@ -52,13 +52,13 @@
 		<property name="repeatInterval">
 			<value>60000</value>
 		</property>
-	</bean> -->
+	</bean>
 
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="msgClock" />
-				<!-- <ref bean="msgActivityTimerClock" /> -->
+<!-- 				<ref bean="msgActivityTimerClock" /> -->
 			</list>
 		</property>
 	</bean>
