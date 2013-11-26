@@ -1,6 +1,7 @@
 package com.greenisland.taxi.manager;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.greenisland.taxi.common.BaseHibernateDao;
 import com.greenisland.taxi.domain.CommentInfo;
@@ -19,6 +20,7 @@ public class CommentInfoService extends BaseHibernateDao {
 	 * @param commentInfo
 	 * @return
 	 */
+	@Transactional
 	public String saveCommentInfo(CommentInfo commentInfo) {
 		return (String) this.getHibernateTemplate().save(commentInfo);
 	}

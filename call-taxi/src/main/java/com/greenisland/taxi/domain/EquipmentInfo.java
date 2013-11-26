@@ -20,6 +20,7 @@ public class EquipmentInfo {
 	private String id;
 	private String equipmentId;
 	private Integer requestCaptchaCount;
+	private String uid;
 
 	@Id
 	@GenericGenerator(name = "idGenerator", strategy = "uuid")
@@ -61,5 +62,14 @@ public class EquipmentInfo {
 		this.equipmentId = equipmentId;
 		this.requestCaptchaCount = requestCaptchaCount;
 	}
+	@Column(name="USER_ID_")
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
 
 }

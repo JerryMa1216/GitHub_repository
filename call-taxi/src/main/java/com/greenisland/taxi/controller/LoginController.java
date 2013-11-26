@@ -149,6 +149,7 @@ public class LoginController {
 							newEquipInfo.setId(UUID.randomUUID().toString());
 							newEquipInfo.setEquipmentId(equipmentId);
 							newEquipInfo.setRequestCaptchaCount(1);
+							newEquipInfo.setUid(userInfo.getId());
 							this.equipmentInfoService.save(newEquipInfo);
 							map.put("state", "0");
 							map.put("message", "成功");
@@ -180,10 +181,11 @@ public class LoginController {
 						newUser.setCreateDate(new Date());
 						newUser.setUserName(phoneNumber);
 						newUser.setActivateState(UserState.ACTIVATED);
-						this.userInfoService.saveUserInfo(newUser);
+						String uid = this.userInfoService.saveUserInfo(newUser);
 						newEquipInfo.setId(UUID.randomUUID().toString());
 						newEquipInfo.setEquipmentId(equipmentId);
 						newEquipInfo.setRequestCaptchaCount(1);
+						newEquipInfo.setUid(uid);
 						this.equipmentInfoService.save(newEquipInfo);
 						map.put("state", "0");
 						map.put("message", "成功");
@@ -200,6 +202,7 @@ public class LoginController {
 			}
 		}
 		try {
+			map.put("c", captchaCode);
 			response.reset();
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("text/json");

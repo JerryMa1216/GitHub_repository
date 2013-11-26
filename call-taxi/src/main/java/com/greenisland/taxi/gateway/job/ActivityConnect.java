@@ -27,8 +27,6 @@ public class ActivityConnect extends QuartzJobBean {
 		log.info("start connecting detection !");
 		try {
 			syncClient.sendMessage("<<0099,0000000009,0>>");
-			String returnData = syncClient.getResult();
-			System.out.println(returnData);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -118,6 +118,7 @@ public class CallApplyController {
 		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
 		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId + "," + mechineType, location, userInfo);
 		syncClient.sendMessage(requestMsg);
+		Thread.sleep(60000);
 		String responseData = syncClient.getResult();
 		mapCall = messageHandler.handler(responseData);
 		String returnData = (String) mapCall.get(GPSCommand.GPS_CALL_RESP);

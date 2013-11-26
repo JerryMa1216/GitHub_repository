@@ -58,9 +58,13 @@ public class MsgContainer {
 	public Socket getSocketInstance() {
 		if (null == msgSocket || msgSocket.isClosed() || !msgSocket.isConnected()) {
 			try {
+				in=null;
+				out=null;
 				msgSocket = new Socket(Configure.getString("ismgIp"), Integer.parseInt(Configure.getString("ismgPort")));
 				msgSocket.setKeepAlive(true);
-				msgSocket.setSoTimeout(Integer.parseInt(Configure.getString("timeOut")));
+//				msgSocket.setSoTimeout(Integer.parseInt(Configure.getString("timeOut")));
+				in=getSocketDIS();
+				out=getSocketDOS();
 				int count = 0;
 				boolean result = connectISMG();
 				while (!result) {

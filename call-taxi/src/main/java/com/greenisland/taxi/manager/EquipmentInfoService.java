@@ -3,6 +3,7 @@ package com.greenisland.taxi.manager;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.greenisland.taxi.common.BaseHibernateDao;
 import com.greenisland.taxi.domain.EquipmentInfo;
@@ -21,10 +22,12 @@ public class EquipmentInfoService extends BaseHibernateDao {
 		return list.size() > 0 && list != null ? list.get(0) : null;
 	}
 
+	@Transactional
 	public void update(EquipmentInfo equipmentInfo) {
 		this.getHibernateTemplate().update(equipmentInfo);
 	}
 
+	@Transactional
 	public String save(EquipmentInfo equipmentInfo) {
 		return (String) this.getHibernateTemplate().save(equipmentInfo);
 	}

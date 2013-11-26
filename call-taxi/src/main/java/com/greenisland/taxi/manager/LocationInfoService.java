@@ -1,6 +1,7 @@
 package com.greenisland.taxi.manager;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.greenisland.taxi.common.BaseHibernateDao;
 import com.greenisland.taxi.domain.LocationInfo;
@@ -18,6 +19,7 @@ public class LocationInfoService extends BaseHibernateDao {
 	 * 
 	 * @param locationInfo
 	 */
+	@Transactional
 	public void saveLocationInfo(LocationInfo locationInfo) {
 		this.getHibernateTemplate().save(locationInfo);
 	}

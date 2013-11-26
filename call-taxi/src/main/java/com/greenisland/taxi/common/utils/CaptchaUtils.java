@@ -15,7 +15,7 @@ public class CaptchaUtils {
 	public static String getCaptcha() {
 		Random random = new Random();
 		String captcha = "";
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 4; i++) {
 			String rand = String.valueOf(random.nextInt(10));
 			captcha += rand;
 		}

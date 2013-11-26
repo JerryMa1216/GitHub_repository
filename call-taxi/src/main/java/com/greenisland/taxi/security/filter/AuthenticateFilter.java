@@ -58,6 +58,7 @@ public class AuthenticateFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		response.reset();
 		response.setCharacterEncoding("UTF-8");
+		response.setContentType("text/json");
 		PrintWriter pw = response.getWriter();
 		String url = req.getRequestURI().toString();
 		try {

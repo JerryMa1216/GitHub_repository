@@ -3,6 +3,7 @@ package com.greenisland.taxi.manager;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.greenisland.taxi.common.BaseHibernateDao;
 import com.greenisland.taxi.common.constant.ApplicationState;
@@ -56,17 +57,19 @@ public class CallApplyInfoService extends BaseHibernateDao {
 	@SuppressWarnings("unchecked")
 	public List<CallApplyInfo> queryApplyInfoByUid(String uid) {
 		StringBuilder hql = new StringBuilder("from CallApplyInfo c where 1=1 ");
-		hql.append(" and c.deleteFlag ='N' and c.state='" + ApplicationState.VALIDATION + "' and c.responseState='"+ResponseState.RESPONSED+"'");
-		
+		hql.append(" and c.deleteFlag ='N' and c.state='" + ApplicationState.VALIDATION + "' and c.responseState='" + ResponseState.RESPONSED + "'");
+
 		hql.append("and c.userId=?");
 		List<CallApplyInfo> list = this.getHibernateTemplate().find(hql.toString(), uid);
 		return list;
 	}
 
+	@Transactional
 	public String saveCallApplyInfo(CallApplyInfo applyInfo) {
 		return (String) this.getHibernateTemplate().save(applyInfo);
 	}
 
+	@Transactional
 	public void updateApplyInfo(CallApplyInfo applyInfo) {
 		this.getHibernateTemplate().update(applyInfo);
 	}

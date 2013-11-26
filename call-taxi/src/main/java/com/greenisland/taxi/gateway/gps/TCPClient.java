@@ -86,9 +86,12 @@ public class TCPClient extends Thread implements InitializingBean {
 					String msgId = msg2.substring(0, 4);
 					if (msgId.equals(Integer.toString(GPSCommand.GPS_TAXI_RESP))) {
 						synResponse.handlerResponse(resultValue);
-					}
-					synchronized (client) {
-						client.setResult(resultValue);
+					} else if (msgId.equals(Integer.toString(GPSCommand.GPS_HEARTBEAT))) {
+						log.info("心跳包链路响应：" + resultValue);
+					} else {
+						synchronized (client) {
+							client.setResult(resultValue);
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -133,7 +136,8 @@ public class TCPClient extends Thread implements InitializingBean {
 		String returnData = client.getResult();
 		log.info("登陆成功,返回信息：[" + returnData + "]");
 	}
+
 	public static void main(String[] args) {
-		
+
 	}
 }

@@ -25,7 +25,7 @@ public class MsgActivityTimer extends QuartzJobBean {
 		System.out.println("×××××××××××××开始链路检查××××××××××××××");
 		int count = 0;
 		boolean result = msgContainer.activityTestISMG();
-		boolean flag =msgContainer.sendMsg("测试短信", "13818873685");
+//		boolean flag =msgContainer.sendMsg("测试短信", "13818873685");
 		while (!result) {
 			count++;
 			result = msgContainer.activityTestISMG();
