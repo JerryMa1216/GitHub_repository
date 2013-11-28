@@ -37,7 +37,7 @@ public class SyncResponse {
 		Map<String, Object> mapTaxi = null;// 调用接口返回值
 		mapTaxi = messageHandler.handler(responseData);
 		String applyId = (String) mapTaxi.get("applyId");
-		String mechineType = applyId.split(",")[1];
+		String mechineType = applyId.split("-")[1];
 		TaxiInfo respTaxi = (TaxiInfo) mapTaxi.get(GPSCommand.GPS_TAXI_RESP);
 		CallApplyInfo applyInfo = callApplyInfoService.getApplyInfoValidated(applyId.split(",")[0]);
 		CompanyInfo respCompany = respTaxi.getCompanyInfo();

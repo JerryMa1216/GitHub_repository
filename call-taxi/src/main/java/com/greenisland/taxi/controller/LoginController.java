@@ -140,7 +140,6 @@ public class LoginController {
 					try {
 						message.append("159打车，登陆验证码为： " + captchaCode);
 						flag = this.msgContainer.sendMsg(message.toString(), phoneNumber);
-						flag = true;// 测试用
 						if (flag) {
 							userInfo.setCaptcha(captchaCode);
 							userInfo.setActivateState(UserState.ACTIVATED);

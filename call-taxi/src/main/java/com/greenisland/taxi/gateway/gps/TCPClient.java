@@ -74,7 +74,7 @@ public class TCPClient extends Thread implements InitializingBean {
 		super.run();
 		isRunning = !isServerClose(socket);
 		int rLen = 0;
-		byte[] data = new byte[1024];
+		byte[] data = new byte[10*1024];
 		while (isRunning) {
 			try {
 				rLen = in.read(data);
@@ -135,9 +135,5 @@ public class TCPClient extends Thread implements InitializingBean {
 		sendMessage(TCPUtils.getLoginMsg(username, password));
 		String returnData = client.getResult();
 		log.info("登陆成功,返回信息：[" + returnData + "]");
-	}
-
-	public static void main(String[] args) {
-
 	}
 }

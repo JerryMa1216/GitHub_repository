@@ -83,7 +83,8 @@ public class CallApplyController {
 	@RequestMapping(value = "/call_taxi", method = RequestMethod.POST)
 	public void callTaxi(@RequestParam String phoneNumber, @RequestParam String callTime, @RequestParam String callType,
 			@RequestParam String callScope, @RequestParam String callDistance, @RequestParam String mechineType, @RequestParam String sLoca,
-			@RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude, HttpServletResponse response) throws Exception {
+			@RequestParam String eLoca, @RequestParam String longitude, @RequestParam String latitude, @RequestParam String userId,
+			@RequestParam String channelId, HttpServletResponse response) throws Exception {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
@@ -116,18 +117,17 @@ public class CallApplyController {
 		applyInfo.setIsComment("0");
 		applyInfo.setDeleteFlag("N");// 未删除
 		String applyId = callApplyInfoService.saveCallApplyInfo(applyInfo);
-		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId + "," + mechineType, location, userInfo);
+		String requestMsg = TCPUtils.getCallApply(applyInfo, applyId + "-" + mechineType, location, userInfo);
 		syncClient.sendMessage(requestMsg);
-		Thread.sleep(60000);
 		String responseData = syncClient.getResult();
 		mapCall = messageHandler.handler(responseData);
-		String returnData = (String) mapCall.get(GPSCommand.GPS_CALL_RESP);
+		String returnData = (String) mapCall.get(GPSCommand.GPS_CALL_RESP + "");
 		if (!returnData.equals("ER")) {
 			// 叫车请求发送成功
 			map.put("state", 0);
 			map.put("message", "OK");
 			map.put("date", new Date());
-			map.put("data", returnData);
+			map.put("data", returnData.substring(0, returnData.indexOf("-")));
 		} else {
 			CallApplyInfo apply = callApplyInfoService.getCallApplyInfoById(applyId);
 			apply.setDeleteFlag("Y");
@@ -171,12 +171,13 @@ public class CallApplyController {
 			applyInfo.setCanncelReason(canncelReason);
 			applyInfo.setDeleteFlag("Y");
 			applyInfo.setState(ApplicationState.INVALIDATION);
+			callApplyInfoService.updateApplyInfo(applyInfo);
 			UserInfo userInfo = userInfoService.getUserInfoById(uid);
 			userInfo.setBreakPromissDate(new Date());
 			int count = userInfo.getBreakPromiseCount();
 			userInfo.setBreakPromiseCount(count++);
 			userInfo.setUpdateDate(new Date());
-			this.userInfoService.saveUserInfo(userInfo);
+			this.userInfoService.updateUserInfo(userInfo);
 			map.put("state", 0);
 			map.put("message", "OK");
 			map.put("date", new Date());
@@ -207,12 +208,12 @@ public class CallApplyController {
 	 * @param response
 	 */
 	@RequestMapping(value = "/query_orders", method = RequestMethod.POST)
-	public void queryHistoryOrder(@RequestParam String uid, HttpServletResponse response) throws Exception{
+	public void queryHistoryOrder(@RequestParam String uid, HttpServletResponse response) throws Exception {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:dd"));
 		List<CallApplyInfo> list = callApplyInfoService.queryApplyInfoByUid(uid);
-		for(CallApplyInfo apply : list){
+		for (CallApplyInfo apply : list) {
 			TaxiInfo taxi = taxiInfoService.getTaxiInfoById(apply.getTaxiId());
 			apply.setTaxiPlateNumber(taxi.getTaxiPlateNumber());
 			apply.setDriverName(taxi.getDriverName());
@@ -283,11 +284,11 @@ public class CallApplyController {
 			log.error("系统异常>>" + e.getMessage());
 		}
 	}
-	
-	private List<Map<String,Object>> convertMap(List<CallApplyInfo> list){
-		List<Map<String,Object>> returnList = new ArrayList<Map<String,Object>>();
-		for(CallApplyInfo applyInfo : list){
-			Map<String,Object> map = new HashMap<String,Object>();
+
+	private List<Map<String, Object>> convertMap(List<CallApplyInfo> list) {
+		List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
+		for (CallApplyInfo applyInfo : list) {
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("id", applyInfo.getId());
 			map.put("startLocation", applyInfo.getStartLocation());
 			map.put("endLocation", applyInfo.getEndLocation());
