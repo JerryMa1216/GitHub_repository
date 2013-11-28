@@ -1,5 +1,6 @@
 package com.greenisland.taxi.gateway.gps;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,19 +75,25 @@ public class TCPClient extends Thread implements InitializingBean {
 		super.run();
 		isRunning = !isServerClose(socket);
 		int rLen = 0;
-		byte[] data = new byte[10*1024];
+		byte[] data = new byte[100 * 1024];
 		while (isRunning) {
 			try {
 				rLen = in.read(data);
 				if (rLen > 0) {
 					resultValue = new String(data, 0, rLen, "GBK");
+					System.out.println(resultValue);
 					String msg1 = resultValue.substring(2);
 					String msg2 = msg1.substring(0, msg1.indexOf(">"));
 					// 消息id
 					String msgId = msg2.substring(0, 4);
-					if (msgId.equals(Integer.toString(GPSCommand.GPS_TAXI_RESP))) {
+					if (msgId
+							.equals(Integer.toString(GPSCommand.GPS_TAXI_RESP))) {
+						System.out.println("=====================");
+						System.out.println("司机抢达响应结果为： " + resultValue);
+						System.out.println("=====================");
 						synResponse.handlerResponse(resultValue);
-					} else if (msgId.equals(Integer.toString(GPSCommand.GPS_HEARTBEAT))) {
+					} else if (msgId.equals(Integer
+							.toString(GPSCommand.GPS_HEARTBEAT))) {
 						log.info("心跳包链路响应：" + resultValue);
 					} else {
 						synchronized (client) {
@@ -135,5 +142,9 @@ public class TCPClient extends Thread implements InitializingBean {
 		sendMessage(TCPUtils.getLoginMsg(username, password));
 		String returnData = client.getResult();
 		log.info("登陆成功,返回信息：[" + returnData + "]");
+		sendMessage("<<0003,8961977906,297e6c174299bb0a014299bdbc350003-2,1,余杭区临平街道思惠家园西大街府前路西北,浦东新区祖冲之路2305,120.280539,30.415682,Wed Nov 27 13:26:58 CST 2013,6,eric,13916498516,null>>");
+		String r = client.getResult();
+		System.out.println("打车请求响应结果： "+r);
 	}
+
 }
